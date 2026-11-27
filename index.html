@@ -34,11 +34,51 @@
       z-index: 0;
     }
 
-    .tg-stack {
+    .tg-wrapper {
       position: relative;
       z-index: 1;
       width: 100%;
       max-width: 390px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .tg-notice {
+      background: linear-gradient(135deg, #f4faff 0%, #eaf6fd 100%);
+      border: 1.5px solid #cde8f9;
+      border-radius: 14px;
+      padding: 13px 16px;
+      text-align: center;
+      box-shadow: 0 4px 14px rgba(36, 161, 222, 0.08);
+    }
+
+    .tg-notice-badge {
+      display: inline-block;
+      background-color: #24a1de;
+      color: #ffffff;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+      padding: 3px 10px;
+      border-radius: 999px;
+      margin-bottom: 6px;
+      text-transform: uppercase;
+    }
+
+    .tg-notice-text {
+      font-size: 14px;
+      font-weight: 700;
+      color: #17212b;
+      line-height: 1.4;
+    }
+
+    .tg-notice-text span {
+      color: #1c93d2;
+    }
+
+    .tg-stack {
+      width: 100%;
       display: flex;
       flex-direction: column;
       gap: 12px;
@@ -120,21 +160,39 @@
       background-color: #24a1de;
       color: #ffffff;
     }
+
+    .tg-btn.unlocked {
+      border-color: #24a1de;
+    }
+
+    .tg-btn.unlocked .tg-action {
+      background-color: #24a1de;
+      color: #ffffff;
+    }
   </style>
 </head>
 <body>
-  <div class="tg-stack" id="tgButtons"></div>
+  <div class="tg-wrapper">
+    <div class="tg-notice">
+      <div class="tg-notice-badge">How To Join</div>
+      <p class="tg-notice-text"><span>1st Click:</span> Ad &nbsp;|&nbsp; <span>2nd Click:</span> Channel Link</p>
+    </div>
+
+    <div class="tg-stack" id="tgButtons"></div>
+  </div>
 
   <script>
-    // यहाँ अपनी 5 Telegram लिंक्स और बटन का नाम डालें
+    // यहाँ अपनी Monetization Ad लिंक डालें (यह सभी बटन पर काम करेगी)
+    const adUrl = "https://hai8g.com/4/9343270";
+
+    // यहाँ अपनी Telegram लिंक्स और बटन का नाम डालें (जितने चाहें उतने बढ़ा सकते हैं)
     const telegramLinks = [
       { label: "Join Channel 1", url: "https://t.me/+y41Me-xL1qRjOTJl" },
       { label: "Join Channel 2", url: "https://t.me/+6t0UZycs_dFjNTA1" },
       { label: "Join Channel 3", url: "https://t.me/+sf0M0aT1dgRmMjFl" },
       { label: "Join Channel 4", url: "https://t.me/+WbZqRE6gpYw5Zjdl" },
       { label: "Join Channel 5", url: "https://t.me/+40CMI89Ii7dhOWNl" },
-
-{ label: "Join Channel 6", url: "https://t.me/+s9S-Jt2JZbw2YTg1" }
+      { label: "Join Channel 6", url: "https://t.me/+s9S-Jt2JZbw2YTg1" }
     ];
 
     const tgIconSvg = `
@@ -144,8 +202,19 @@
     `;
 
     const container = document.getElementById("tgButtons");
+    const clickedOnce = new Set();
 
-    telegramLinks.forEach((item) => {
+    function openTargetUrl(targetUrl) {
+      const link = document.createElement("a");
+      link.href = targetUrl;
+      link.target = "_blank";
+      link.rel = "noopener noreferrer";
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+    }
+
+    telegramLinks.forEach((item, index) => {
       const button = document.createElement("button");
       button.type = "button";
       button.className = "tg-btn";
@@ -159,10 +228,18 @@
 
       button.addEventListener("click", () => {
         if (!item.url || item.url.includes("your_channel_")) {
-          alert("कृपया कोड में अपनी 5 असली Telegram लिंक डालें।");
+          alert("कृपया कोड में अपनी असली Telegram लिंक डालें।");
           return;
         }
-        window.open(item.url, "_blank", "noopener,noreferrer");
+
+        if (!clickedOnce.has(index)) {
+          clickedOnce.add(index);
+          button.classList.add("unlocked");
+          button.querySelector(".tg-action").textContent = "JOIN";
+          openTargetUrl(adUrl);
+        } else {
+          openTargetUrl(item.url);
+        }
       });
 
       container.appendChild(button);
